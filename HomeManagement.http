@@ -1,0 +1,22 @@
+@HomeManagement_HostAddress = http://localhost:5098
+
+###
+
+POST {{HomeManagement_HostAddress}}/api/user/addUser
+Content-Type: application/json
+
+{   
+    "name": "Sonu Dubey",
+    "email": "sdubey@yopmail.com",
+    "password": "123456",
+    "city":"Kota",
+    "mobileNo":"9029451159",
+    "departmentId":1
+}
+
+###
+GET {{HomeManagement_HostAddress}}/api/user/getAllUsers
+
+###
+
+GET {{HomeManagement_HostAddress}}/api/user/getUserById/1
