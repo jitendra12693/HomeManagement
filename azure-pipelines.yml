@@ -1,0 +1,60 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  AZURE_WEBAPP_NAME: 'HomeManagementApi'
+  AZURE_WEBAPP_PACKAGE_PATH: '$(Build.ArtifactStagingDirectory)/publish'
+  CONFIGURATION: 'Release'
+  DOTNET_CORE_VERSION: '9.0.x'
+  WORKING_DIRECTORY: '.'
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Set Package SDK '
+  inputs:
+    packageType: 'sdk'
+    version: '$(DOTNET_CORE_VERSION)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Package Restore"
+  inputs:
+    command: 'restore'
+    projects: '$(WORKING_DIRECTORY)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Project build"
+  inputs:
+    command: 'build'
+    projects: '$(WORKING_DIRECTORY)'
+    arguments: '--configuration $(CONFIGURATION) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: "Unit Test"
+  inputs:
+    command: 'test'
+    projects: '$(WORKING_DIRECTORY)'
+    arguments: '--no-build'
+
+- task: DotNetCoreCLI@2
+  displayName: "Publish project"
+  inputs:
+    command: 'publish'
+    projects: '$(WORKING_DIRECTORY)'
+    arguments: '--configuration $(CONFIGURATION) --no-build --output $(AZURE_WEBAPP_PACKAGE_PATH)'
+
+- task: PublishBuildArtifacts@1
+  displayName: "Create Artifacts"
+  inputs:
+    PathtoPublish: '$(AZURE_WEBAPP_PACKAGE_PATH)'
+    ArtifactName: 'webapp'
+
+- task: AzureRmWebAppDeployment@5
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1(e6511a57-ccce-456e-8609-fadbe249291e)'
+    appType: 'webApp'
+    WebAppName: 'HomeManagementApi'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
