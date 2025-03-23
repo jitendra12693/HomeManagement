@@ -50,6 +50,14 @@ steps:
   inputs:
     PathtoPublish: '$(AZURE_WEBAPP_PACKAGE_PATH)'
     ArtifactName: 'webapp'
+    publishLocation: 'Container'
+
+- task: DownloadBuildArtifacts@0
+  inputs:
+    buildType: 'current'
+    downloadType: 'single'
+    artifactName: 'webapp'
+    downloadPath: '$(Build.SourcesDirectory)'
 
 - task: AzureRmWebAppDeployment@5
   inputs:
