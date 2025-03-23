@@ -17,15 +17,19 @@ steps:
   inputs:
     packageType: 'sdk'
     version: '$(DOTNET_CORE_VERSION)'
+  continueOnError: false
 
 - task: DotNetCoreCLI@2
   displayName: "Package Restore"
+  continueOnError: false
   inputs:
     command: 'restore'
     projects: '$(WORKING_DIRECTORY)'
 
+
 - task: DotNetCoreCLI@2
   displayName: "Project build"
+  continueOnError: false
   inputs:
     command: 'build'
     projects: '$(WORKING_DIRECTORY)'
@@ -33,6 +37,7 @@ steps:
 
 - task: DotNetCoreCLI@2
   displayName: "Unit Test"
+  continueOnError: false
   inputs:
     command: 'test'
     projects: '$(WORKING_DIRECTORY)'
@@ -40,6 +45,7 @@ steps:
 
 - task: DotNetCoreCLI@2
   displayName: "Publish project"
+  continueOnError: false
   inputs:
     command: 'publish'
     projects: '$(WORKING_DIRECTORY)'
@@ -47,12 +53,15 @@ steps:
 
 - task: PublishBuildArtifacts@1
   displayName: "Create Artifacts"
+  continueOnError: false
   inputs:
     PathtoPublish: '$(AZURE_WEBAPP_PACKAGE_PATH)'
     ArtifactName: 'webapp'
     publishLocation: 'Container'
 
 - task: DownloadBuildArtifacts@0
+  displayName: "Download Artifacts"
+  continueOnError: false
   inputs:
     buildType: 'current'
     downloadType: 'single'
@@ -60,6 +69,7 @@ steps:
     downloadPath: '$(Build.SourcesDirectory)'
 
 - task: AzureRmWebAppDeployment@5
+  displayName: "Deploy to Azure WebApp"
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'Azure subscription 1(e6511a57-ccce-456e-8609-fadbe249291e)'
