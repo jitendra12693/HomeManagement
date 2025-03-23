@@ -24,7 +24,7 @@ namespace HomeManagement.Repository
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            return await _context.Users.Include(d=>d.Department).ToListAsync();
+            return await _context.Users.Include(x=>x.Department).ToListAsync();
         }
 
         public async Task<User> AddUserAsync(User user)

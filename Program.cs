@@ -46,7 +46,6 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 // Add Configuration
 builder.Services.Configure<LoginRepository>(builder.Configuration.GetSection("Jwt"));
-//builder.Services.AddSingleton<LoginRepository>();
 
 var app = builder.Build();
 
@@ -54,10 +53,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
 }
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

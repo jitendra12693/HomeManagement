@@ -2,7 +2,7 @@
 
 ###
 
-POST {{HomeManagement_HostAddress}}/api/user/addUser
+POST {{HomeManagement_HostAddress}}/api/user/3/addUser
 Content-Type: application/json
 
 {   
@@ -10,8 +10,7 @@ Content-Type: application/json
     "email": "sdubey@yopmail.com",
     "password": "123456",
     "city":"Kota",
-    "mobileNo":"9029451159",
-    "departmentId":1
+    "mobileNo":"9029451159"
 }
 
 ###
