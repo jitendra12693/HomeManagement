@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace HomeManagement.Migrations
 {
     [DbContext(typeof(HomeManagementDbContext))]
-    [Migration("20250308132723_AddDepartmentTable")]
-    partial class AddDepartmentTable
+    [Migration("20250325100111_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,7 +90,20 @@ namespace HomeManagement.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("HomeManagement.Model.User", b =>
+                {
+                    b.HasOne("HomeManagement.Model.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
                 });
 #pragma warning restore 612, 618
         }
