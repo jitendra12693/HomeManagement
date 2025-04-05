@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HomeManagement.CQRS.CommandHandler.DepartmentCommandHandler;
+using HomeManagement.CQRS.QueryHandler.DepartmentQuery;
 using HomeManagement.Model;
 using HomeManagement.Repository.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeManagement.Controller
@@ -13,23 +16,26 @@ namespace HomeManagement.Controller
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentRepository _departmentRepository;
-
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        private readonly ISender _mediator;
+        public DepartmentController(IDepartmentRepository departmentRepository, ISender mediator)
         {
+            _mediator = mediator;
             _departmentRepository = departmentRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllDepartments()
         {
-            var departments = await _departmentRepository.GetAllDepartmentsAsync();
-            return Ok(departments);
+            var departments = await _mediator.Send(new GetAllDepartmentQuery());
+            // var departments = await _departmentRepository.GetAllDepartmentsAsync();
+             return Ok(departments);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDepartmentById(int id)
         {
-            var department = await _departmentRepository.GetDepartmentByIdAsync(id);
+            //var department = await _departmentRepository.GetDepartmentByIdAsync(id);
+            var department = await _mediator.Send(new GetDepartmentByIdQuery(id));
             if (department == null)
             {
                 return NotFound();
@@ -38,16 +44,22 @@ namespace HomeManagement.Controller
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDepartment([FromBody] Department department)
+        public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentCommand command)
         {
-            var newDepartment = await _departmentRepository.AddDepartmentAsync(department);
-            if (newDepartment == null)
+            var department = await _mediator.Send(command);
+            if (department == null)
             {
                 return BadRequest("Department is already exists.");
-            }
+            }   
+            return CreatedAtAction(nameof(GetDepartmentById), new { id = department.Id }, department);
+            // var newDepartment = await _departmentRepository.AddDepartmentAsync(department);
+            // if (newDepartment == null)
+            // {
+            //     return BadRequest("Department is already exists.");
+            // }
 
 
-            return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.Id }, newDepartment);
+            // return CreatedAtAction(nameof(GetDepartmentById), new { id = newDepartment.Id }, newDepartment);
         }
 
         [HttpPut("{id}")]
